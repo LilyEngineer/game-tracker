@@ -1,7 +1,7 @@
 # 🎮 Game Tracker - Vanilla JS App
 
 A cute and colorful **Video Game Progress Tracker** app built using **only HTML, CSS, and vanilla JavaScript**. Keep track of your video game backlog, games you're currently playing, and completed games — all in a pastel lilac, pink, and blue aesthetic with adorable emojis and fun fonts!
-
+![App Sceenshot](https://github.com/LilyEngineer/game-tracker/blob/1645151f7a8a37f86e26882c4ae3edc923a0519e/Screenshot%202025-06-07%20185142.png)
 ---
 
 ## Features
