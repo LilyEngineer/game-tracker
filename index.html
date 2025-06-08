@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>🎮 Game Tracker</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Cherry+Bomb+One&family=Quicksand:wght@400;700&display=swap');
+
+    body {
+      margin: 0;
+      padding: 0;
+      background: #fff0fa;
+      font-family: 'Quicksand', sans-serif;
+      color: #5a4072;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      flex-direction: column;
+    }
+
+    h1 {
+      font-family: 'Cherry Bomb One', cursive;
+      font-size: 3em;
+      margin: 20px;
+      color: #d278d8;
+      text-shadow: 2px 2px #ffd9f5;
+    }
+
+    .container {
+      background: #ffeafc;
+      border-radius: 30px;
+      padding: 30px;
+      box-shadow: 0 0 25px rgba(215, 160, 255, 0.2);
+      max-width: 1100px;
+      width: 95%;
+      text-align: center;
+    }
+
+    .add-game {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 30px;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    input[type="text"] {
+      padding: 12px 15px;
+      border: 2px solid #f5d1ff;
+      border-radius: 25px;
+      width: 260px;
+      font-size: 1em;
+      background: #fff6ff;
+      font-family: 'Quicksand', sans-serif;
+      box-shadow: 2px 2px 5px #f5d7ff;
+      color: #6d4c84;
+    }
+
+    button {
+      background: #ffc9ec;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 25px;
+      cursor: pointer;
+      font-family: 'Quicksand', sans-serif;
+      font-size: 1em;
+      color: #4c315e;
+      box-shadow: 2px 2px 5px #ecc8ff;
+    }
+
+    button:hover {
+      background: #f8aee0;
+    }
+
+    .board {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+
+    .column {
+      background: #f9e6ff;
+      border-radius: 20px;
+      padding: 20px;
+      width: 300px;
+      min-height: 200px;
+      box-shadow: 4px 4px 8px rgba(200, 150, 255, 0.2);
+      border: 3px dashed #e6cef8;
+    }
+
+    .column h2 {
+      font-family: 'Cherry Bomb One', cursive;
+      font-size: 1.6em;
+      margin-bottom: 10px;
+    }
+
+    .game-list {
+      list-style: none;
+      padding: 0;
+    }
+
+    .game-item {
+      background: #fff0fa;
+      border: 2px solid #f5d7ff;
+      margin: 10px 0;
+      padding: 12px;
+      border-radius: 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 1em;
+      color: #683d83;
+      box-shadow: 2px 2px 6px rgba(239, 204, 255, 0.4);
+    }
+
+    .controls {
+      display: flex;
+      gap: 5px;
+    }
+
+    .controls button {
+      padding: 5px 10px;
+      font-size: 1em;
+      border-radius: 12px;
+      background-color: #e8ccff;
+      border: none;
+      color: #5a3c7d;
+    }
+
+    .controls button:hover {
+      background-color: #dab3f8;
+    }
+
+    .reset-btn {
+      background-color: #ffd3e8;
+      color: #803c5a;
+      padding: 10px 20px;
+      font-size: 1em;
+      border-radius: 30px;
+      border: 2px dashed #f8aee0;
+      margin-top: 30px;
+    }
+
+    .reset-btn:hover {
+      background-color: #ffbada;
+    }
+  </style>
+</head>
+<body>
+  <h1>🎮 Game Tracker 🌸</h1>
+  <div class="container">
+    <div class="add-game">
+      <input type="text" id="gameInput" placeholder="Add a new game..." />
+      <button type="button" id="addGameBtn">Add Game 💾</button>
+    </div>
+
+    <div class="board">
+      <div class="column" id="backlog">
+        <h2>📚 Backlog</h2>
+        <ul class="game-list" id="backlogList"></ul>
+      </div>
+      <div class="column" id="playing">
+        <h2>🎮 Playing</h2>
+        <ul class="game-list" id="playingList"></ul>
+      </div>
+      <div class="column" id="completed">
+        <h2>🏁 Completed</h2>
+        <ul class="game-list" id="completedList"></ul>
+      </div>
+    </div>
+
+    <button class="reset-btn" type="button" id="resetBtn">Reset Tracker 🔄</button>
+  </div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const gameInput = document.getElementById('gameInput');
+      const backlogList = document.getElementById('backlogList');
+      const playingList = document.getElementById('playingList');
+      const completedList = document.getElementById('completedList');
+
+      let gameData = JSON.parse(localStorage.getItem('gameData')) || {
+        backlog: [],
+        playing: [],
+        completed: []
+      };
+
+      function saveData() {
+        localStorage.setItem('gameData', JSON.stringify(gameData));
+      }
+
+      function renderList() {
+        backlogList.innerHTML = '';
+        playingList.innerHTML = '';
+        completedList.innerHTML = '';
+
+        gameData.backlog.forEach((game, index) => {
+          backlogList.appendChild(createGameItem(game, 'backlog', index));
+        });
+
+        gameData.playing.forEach((game, index) => {
+          playingList.appendChild(createGameItem(game, 'playing', index));
+        });
+
+        gameData.completed.forEach((game, index) => {
+          completedList.appendChild(createGameItem(game, 'completed', index));
+        });
+      }
+
+      function createGameItem(name, stage, index) {
+        const li = document.createElement('li');
+        li.className = 'game-item';
+
+        const span = document.createElement('span');
+        span.textContent = name;
+
+        const controls = document.createElement('div');
+        controls.className = 'controls';
+
+        if (stage === 'backlog') {
+          controls.appendChild(createButton('🎮', () => moveGame('backlog', 'playing', index)));
+        } else if (stage === 'playing') {
+          controls.appendChild(createButton('⬅️', () => moveGame('playing', 'backlog', index)));
+          controls.appendChild(createButton('🏁', () => moveGame('playing', 'completed', index)));
+        } else if (stage === 'completed') {
+          controls.appendChild(createButton('🔁', () => moveGame('completed', 'backlog', index)));
+        }
+
+        controls.appendChild(createButton('❌', () => deleteGame(stage, index)));
+
+        li.appendChild(span);
+        li.appendChild(controls);
+
+        return li;
+      }
+
+      function createButton(label, onClick) {
+        const btn = document.createElement('button');
+        btn.textContent = label;
+        btn.onclick = onClick;
+        return btn;
+      }
+
+      function addGame() {
+        const game = gameInput.value.trim();
+        if (game) {
+          gameData.backlog.push(game);
+          gameInput.value = '';
+          saveData();
+          renderList();
+        }
+      }
+
+      function moveGame(from, to, index) {
+        const [game] = gameData[from].splice(index, 1);
+        gameData[to].push(game);
+        saveData();
+        renderList();
+      }
+
+      function deleteGame(stage, index) {
+        gameData[stage].splice(index, 1);
+        saveData();
+        renderList();
+      }
+
+      function resetTracker() {
+        if (confirm('Are you sure you want to reset everything? 🥺')) {
+          gameData = { backlog: [], playing: [], completed: [] };
+          saveData();
+          renderList();
+        }
+      }
+
+      document.getElementById('addGameBtn').addEventListener('click', addGame);
+      document.getElementById('resetBtn').addEventListener('click', resetTracker);
+
+      renderList();
+    });
+  </script>
+</body>
+</html>
